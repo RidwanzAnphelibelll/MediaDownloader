@@ -7,10 +7,14 @@ import sys
 import time
 import subprocess
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def install_package(package):
     try:
         __import__(package)
     except ImportError:
+        clear_screen()
         print(f"Installing Packages {package}...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
@@ -63,9 +67,6 @@ def trigger_media_scan(file_path):
     except:
         pass
 
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
 def download_file(url, filename, platform):
     try:
         if not ensure_download_folder():
@@ -85,7 +86,7 @@ def download_file(url, filename, platform):
             
             trigger_media_scan(filename)         
             
-        print(f'{Fore.GREEN}{Style.BRIGHT}Media {platform} Berhasil Diunduh!{Style.RESET_ALL}')
+        print(f'{Fore.GREEN}{Style.BRIGHT}Video {platform} Berhasil Diunduh!{Style.RESET_ALL}')
         time.sleep(1.5)
         print(f'{Fore.CYAN}{Style.BRIGHT}Tersimpan Di: {filename}{Style.RESET_ALL}')
         input(f'{Fore.WHITE}{Style.BRIGHT}Tekan Enter untuk kembali ke menu...{Style.RESET_ALL}')
@@ -410,6 +411,7 @@ def download_instagram_media(media_items, base_url):
     print(f'{Fore.GREEN}{Style.BRIGHT}Ditemukan {len(media_items)} Media{Style.RESET_ALL}')
     
     error_occurred = False
+    downloaded_files = []
     
     for media in media_items:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -437,14 +439,17 @@ def download_instagram_media(media_items, base_url):
                 trigger_media_scan(filename)
                 
             print(f'{Fore.GREEN}{Style.BRIGHT}{media["type"].capitalize()} {media["index"]} Berhasil Diunduh!{Style.RESET_ALL}')
+            time.sleep(1.5)
+            print(f'{Fore.BLUE}{Style.BRIGHT}Tersimpan Di: {filename}{Style.RESET_ALL}')
+            downloaded_files.append(filename)
             time.sleep(0.5)
             
         except Exception as e:
             print(f'{Fore.RED}{Style.BRIGHT}Error Mengunduh {media["type"]} {media["index"]}: {e}{Style.RESET_ALL}')
             error_occurred = True
     
-    if not error_occurred:
-        print(f'{Fore.CYAN}{Style.BRIGHT}Semua Media Instagram Berhasil Diunduh!{Style.RESET_ALL}')
+    if not error_occurred and downloaded_files:
+        time.sleep(0.5)
     
     input(f'{Fore.WHITE}{Style.BRIGHT}Tekan Enter untuk kembali ke menu...{Style.RESET_ALL}')
 
